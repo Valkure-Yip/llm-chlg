@@ -1,20 +1,20 @@
 import { useForm } from "react-hook-form"
-import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 const formSchema = z.object({
-  startingLocation: z.string().min(1, { message: "Starting location is required" }),
-  dropOffPoint: z.string().min(1, { message: "Drop-off point is required" }),
+  origin: z.string().min(1, { message: "Starting location is required" }),
+  destination: z.string().min(1, { message: "Drop-off point is required" }),
 });
 
 const InputForm = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
-      startingLocation: "",
-      dropOffPoint: "",
+      origin: "",
+      destination: "",
     },
     resolver: zodResolver(formSchema),
   });
@@ -29,29 +29,31 @@ const InputForm = () => {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormField
             control={form.control}
-            name="startingLocation"
+            name="origin"
             render={({ field }) => (
               <FormItem className="my-4">
                 <FormLabel>Starting Location</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter starting location" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
           <FormField
             control={form.control}
-            name="dropOffPoint"
+            name="destination"
             render={({ field }) => (
               <FormItem className="my-4">
                 <FormLabel>Drop-off Point</FormLabel>
                 <FormControl>
                   <Input placeholder="Enter drop-off point" {...field} />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             )}
           />
-          <div className="flex justify-center items-center gap-2">
+          <div className="flex justify-center items-center gap-2 my-4">
             <Button type="submit">Submit</Button>
             <Button type="button" onClick={() => form.reset()}>Reset</Button>
           </div>
