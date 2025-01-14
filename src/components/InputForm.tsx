@@ -4,6 +4,10 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { mockRequestAndGetRouteStatus } from "@/api/mock";
+import { requestAndGetRouteStatus, RouteStatus } from "@/api";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
   origin: z.string().min(1, { message: "Starting location is required" }),
@@ -11,11 +15,12 @@ const formSchema = z.object({
 });
 
 interface InputFormProps {
-  onSubmit: (data: z.infer<typeof formSchema>) => void;
+  routeStatus: RouteStatus | null;
+  onFinish: (status: RouteStatus | null) => void;
   onReset: () => void;
 }
 
-const InputForm = ({ onSubmit, onReset }: InputFormProps) => {
+const InputForm = ({ routeStatus, onFinish, onReset }: InputFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
       origin: "",
@@ -23,6 +28,31 @@ const InputForm = ({ onSubmit, onReset }: InputFormProps) => {
     },
     resolver: zodResolver(formSchema),
   });
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit = async (data: { origin: string, destination: string }) => {
+    setErrorMessage(null);
+    setIsLoading(true);
+    try {
+      const status = import.meta.env.VITE_USE_MOCK ? await mockRequestAndGetRouteStatus(data.origin, data.destination, 'success', 'success')
+        : await requestAndGetRouteStatus(data.origin, data.destination);
+      onFinish(status);
+      setErrorMessage(null);
+    } catch (error) {
+      onFinish(null);
+      setErrorMessage(error instanceof Error ? error.message : 'An unknown error occurred');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleReset = () => {
+    form.reset();
+    onReset();
+    setErrorMessage(null);
+  };
 
   return (
     <div>
@@ -35,7 +65,7 @@ const InputForm = ({ onSubmit, onReset }: InputFormProps) => {
               <FormItem className="my-4">
                 <FormLabel>Starting Location</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter starting location" {...field}
+                  <Input type="search" placeholder="Enter starting location" {...field}
                     autoComplete="origin"
                   />
                 </FormControl>
@@ -50,19 +80,33 @@ const InputForm = ({ onSubmit, onReset }: InputFormProps) => {
               <FormItem className="my-4">
                 <FormLabel>Drop-off Point</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter drop-off point" {...field}
+                  <Input type="search" placeholder="Enter drop-off point" {...field}
                     autoComplete="destination" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+          <div className="my-4 h-32 flex flex-col justify-end">
+            {
+              routeStatus?.status === 'success' && <div>
+                <p>total distance: {routeStatus.total_distance}</p>
+                <p>total time: {routeStatus.total_time}</p>
+              </div>
+            }
+            {
+              errorMessage && <div>
+                <p className="text-red-500">{errorMessage}</p>
+              </div>
+            }
+
+          </div>
           <div className="flex justify-center items-center gap-2 my-4">
-            <Button type="submit">Submit</Button>
-            <Button type="button" onClick={() => {
-              form.reset();
-              onReset();
-            }}>Reset</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? <Loader2 className="animate-spin" /> : null}
+              Submit
+            </Button>
+            <Button type="button" onClick={handleReset}>Reset</Button>
           </div>
         </form>
       </Form>

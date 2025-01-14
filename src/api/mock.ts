@@ -85,23 +85,26 @@ export const mockGetRouteStatus = async (token: string, mockStatus: '500' | 'suc
 export const mockRequestAndGetRouteStatus = async (
   origin: string,
   destination: string,
+  requestRouteMockStatus: '500' | 'success',
+  getRouteMockStatus: '500' | 'success' | 'inprogress' | 'failure',
   maxRetries: number = 5,
   retryDelay: number = 2000
 ): Promise<RouteStatus> => {
   try {
-    const token = await mockRequestRoute({ origin, destination }, 'success');
+    const token = await mockRequestRoute({ origin, destination }, requestRouteMockStatus);
     let retries = 0;
 
     while (retries < maxRetries) {
-      const routeStatus = await mockGetRouteStatus(token, 'success');
+      const routeStatus = await mockGetRouteStatus(token, getRouteMockStatus);
 
       switch (routeStatus.status) {
         case 'in progress':
           retries++;
           await new Promise(resolve => setTimeout(resolve, retryDelay));
+          console.log("retry ", retries);
           break;
         case 'failure':
-          throw new Error(`Route failed: ${routeStatus.error}`);
+          throw new Error(`${routeStatus.error}`);
         case 'success':
           return routeStatus;
       }

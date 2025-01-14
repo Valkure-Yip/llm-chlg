@@ -140,9 +140,10 @@ export const requestAndGetRouteStatus = async (
         case 'in progress':
           retries++;
           await new Promise(resolve => setTimeout(resolve, retryDelay));
+          console.log("retry ", retries);
           break;
         case 'failure':
-          throw new Error(`Route failed: ${routeStatus.error}`);
+          throw new Error(`${routeStatus.error}`);
         case 'success':
           return routeStatus;
       }

@@ -8,22 +8,18 @@ function App() {
 
   const [routeStatus, setRouteStatus] = useState<RouteStatus | null>(null);
 
-  const onSubmit = async (data: { origin: string, destination: string }) => {
-    console.log(data);
-    // requestAndGetRouteStatus(data.origin, data.destination);
-    const status = await mockRequestAndGetRouteStatus(data.origin, data.destination);
-    console.log(status);
+  const onFinish = (status: RouteStatus | null) => {
     setRouteStatus(status);
   };
 
   const onReset = () => {
-    console.log('reset');
+    setRouteStatus(null);
   };
 
   return (
     <>
       <div className="flex gap-16">
-        <InputForm onSubmit={onSubmit} onReset={onReset} />
+        <InputForm onFinish={onFinish} onReset={onReset} routeStatus={routeStatus} />
         <Map routeStatus={routeStatus} />
       </div>
 
