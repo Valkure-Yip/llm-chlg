@@ -1,4 +1,4 @@
-const MOCK_API_URL = 'https://sg-mock-api.lalamove.com/route';
+const MOCK_API_URL = 'https://sg-mock-api.lalamove.com/mock/route';
 
 interface RouteRequest {
   origin: string;
@@ -41,7 +41,7 @@ export const mockRequestRoute = async (
   { origin, destination }: RouteRequest,
   mockStatus: '500' | 'success'
 ): Promise<string> => {
-  const response = await fetch(`${MOCK_API_URL}/route/${mockStatus}`, {
+  const response = await fetch(`${MOCK_API_URL}/${mockStatus}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export const mockRequestRoute = async (
 };
 
 export const mockGetRouteStatus = async (token: string, mockStatus: '500' | 'success' | 'inprogress' | 'failure'): Promise<RouteStatus> => {
-  const response = await fetch(`${MOCK_API_URL}/status/${mockStatus}`, {
+  const response = await fetch(`${MOCK_API_URL}/${mockStatus}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -71,4 +71,45 @@ export const mockGetRouteStatus = async (token: string, mockStatus: '500' | 'suc
 
   const data = await response.json();
   return data as RouteStatus;
+};
+
+/**
+ * Function to request a route and get its status, retrying if the status is 'in progress'
+ * @param origin Address of the pickup point
+ * @param destination Address of the drop-off point
+ * @param maxRetries Maximum number of retries if the status is 'in progress'
+ * @param retryDelay Delay between retries in milliseconds
+ * @returns Promise containing the final route status and details
+ * @throws Error if the request fails or maximum retries are exceeded
+ */
+export const mockRequestAndGetRouteStatus = async (
+  origin: string,
+  destination: string,
+  maxRetries: number = 5,
+  retryDelay: number = 2000
+): Promise<RouteStatus> => {
+  try {
+    const token = await mockRequestRoute({ origin, destination }, 'success');
+    let retries = 0;
+
+    while (retries < maxRetries) {
+      const routeStatus = await mockGetRouteStatus(token, 'success');
+
+      switch (routeStatus.status) {
+        case 'in progress':
+          retries++;
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          break;
+        case 'failure':
+          throw new Error(`Route failed: ${routeStatus.error}`);
+        case 'success':
+          return routeStatus;
+      }
+    }
+
+    throw new Error('Maximum retries exceeded');
+  } catch (error) {
+    console.error('Failed to request and get route status:', error);
+    throw error;
+  }
 };

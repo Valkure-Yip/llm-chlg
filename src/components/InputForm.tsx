@@ -10,7 +10,12 @@ const formSchema = z.object({
   destination: z.string().min(1, { message: "Drop-off point is required" }),
 });
 
-const InputForm = () => {
+interface InputFormProps {
+  onSubmit: (data: z.infer<typeof formSchema>) => void;
+  onReset: () => void;
+}
+
+const InputForm = ({ onSubmit, onReset }: InputFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     defaultValues: {
       origin: "",
@@ -18,10 +23,6 @@ const InputForm = () => {
     },
     resolver: zodResolver(formSchema),
   });
-
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
-  };
 
   return (
     <div>
@@ -34,7 +35,9 @@ const InputForm = () => {
               <FormItem className="my-4">
                 <FormLabel>Starting Location</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter starting location" {...field} />
+                  <Input placeholder="Enter starting location" {...field}
+                    autoComplete="origin"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -47,7 +50,8 @@ const InputForm = () => {
               <FormItem className="my-4">
                 <FormLabel>Drop-off Point</FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter drop-off point" {...field} />
+                  <Input placeholder="Enter drop-off point" {...field}
+                    autoComplete="destination" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -55,7 +59,10 @@ const InputForm = () => {
           />
           <div className="flex justify-center items-center gap-2 my-4">
             <Button type="submit">Submit</Button>
-            <Button type="button" onClick={() => form.reset()}>Reset</Button>
+            <Button type="button" onClick={() => {
+              form.reset();
+              onReset();
+            }}>Reset</Button>
           </div>
         </form>
       </Form>

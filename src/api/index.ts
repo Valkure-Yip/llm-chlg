@@ -114,3 +114,43 @@ export const getRouteStatus = async (token: string): Promise<RouteStatus> => {
 //   console.error('Failed to get route status:', error);
 // }
 
+/**
+ * Function to request a route and get its status, retrying if the status is 'in progress'
+ * @param origin Address of the pickup point
+ * @param destination Address of the drop-off point
+ * @param maxRetries Maximum number of retries if the status is 'in progress'
+ * @param retryDelay Delay between retries in milliseconds
+ * @returns Promise containing the final route status and details
+ * @throws Error if the request fails or maximum retries are exceeded
+ */
+export const requestAndGetRouteStatus = async (
+  origin: string,
+  destination: string,
+  maxRetries: number = 5,
+  retryDelay: number = 2000
+): Promise<RouteStatus> => {
+  try {
+    const token = await requestRoute({ origin, destination });
+    let retries = 0;
+
+    while (retries < maxRetries) {
+      const routeStatus = await getRouteStatus(token);
+
+      switch (routeStatus.status) {
+        case 'in progress':
+          retries++;
+          await new Promise(resolve => setTimeout(resolve, retryDelay));
+          break;
+        case 'failure':
+          throw new Error(`Route failed: ${routeStatus.error}`);
+        case 'success':
+          return routeStatus;
+      }
+    }
+
+    throw new Error('Maximum retries exceeded');
+  } catch (error) {
+    console.error('Failed to request and get route status:', error);
+    throw error;
+  }
+};
