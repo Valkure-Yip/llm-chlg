@@ -31,7 +31,7 @@ interface RouteStatusSuccess extends RouteStatusBase {
   total_time: number;
 }
 
-type RouteStatus = RouteStatusBusy | RouteStatusFailure | RouteStatusSuccess;
+export type RouteStatus = RouteStatusBusy | RouteStatusFailure | RouteStatusSuccess;
 
 /**
  * Client-side function to request a route
