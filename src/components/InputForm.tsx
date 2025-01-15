@@ -36,8 +36,8 @@ const InputForm = ({ routeStatus, onFinish, onReset }: InputFormProps) => {
     setErrorMessage(null);
     setIsLoading(true);
     try {
-      const status = import.meta.env.VITE_USE_MOCK === 'true' ? await mockRequestAndGetRouteStatus(data.origin, data.destination, 'success', 'success')
-        : await requestAndGetRouteStatus(data.origin, data.destination);
+      const status = (import.meta.env.VITE_USE_MOCK === 'true' ? await mockRequestAndGetRouteStatus(data.origin, data.destination, 'success', 'success')
+        : await requestAndGetRouteStatus(data.origin, data.destination)) || null;
       onFinish(status);
       setErrorMessage(null);
     } catch (error) {
