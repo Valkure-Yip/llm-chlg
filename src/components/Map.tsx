@@ -1,6 +1,6 @@
 import { RouteStatus } from '@/api';
-import { AdvancedMarker, APIProvider, Map as GoogleMap, Marker, Pin } from '@vis.gl/react-google-maps';
-import { useMemo } from 'react';
+import { AdvancedMarker, APIProvider, Map as GoogleMap, Marker, Pin, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
+import { useEffect, useMemo, useState } from 'react';
 import { Polyline } from './geometry/polyline';
 
 type Poi = { key: string, location: google.maps.LatLngLiteral, isStart: boolean, isEnd: boolean }
@@ -38,23 +38,64 @@ const Map = ({ routeStatus }: { routeStatus: RouteStatus | null }) => {
           defaultZoom={13}
           defaultCenter={{ lat: 22.319393157958984, lng: 114.16931915283203 }}
         >
-          <Polyline
+          <Directions routeStatus={routeStatus} />
+          {/* <Polyline
             strokeColor="#FF0000"
             strokeOpacity={1}
             strokeWeight={2}
             path={paths}
-          />
-          {markers.map((marker) => (
+          /> */}
+          {/* {markers.map((marker) => (
             <AdvancedMarker key={marker.key} position={marker.location}>
-              <Pin background={marker.isStart ? 'green' : marker.isEnd ? 'blue' : 'red'} borderColor="white" >
+              <Pin background={marker.isStart ? 'green' : marker.isEnd ? 'blue' : 'red'} borderColor="transparent" >
                 <span className="text-white font-bold">{marker.key}</span>
               </Pin>
             </AdvancedMarker>
-          ))}
+          ))} */}
         </GoogleMap>
       </APIProvider>
     </div>
   );
 };
+
+function Directions({ routeStatus }: { routeStatus: RouteStatus | null }) {
+  // directions
+  const map = useMap();
+  const routesLibrary = useMapsLibrary('routes');
+  const [directionsService, setDirectionsService] =
+    useState<google.maps.DirectionsService>();
+  const [directionsRenderer, setDirectionsRenderer] =
+    useState<google.maps.DirectionsRenderer>();
+
+  // initialize directions service and renderer
+  useEffect(() => {
+    if (!routesLibrary || !map) return;
+    console.log('initialize directions service and renderer');
+    setDirectionsService(new routesLibrary.DirectionsService());
+    setDirectionsRenderer(new routesLibrary.DirectionsRenderer({ map }));
+  }, [routesLibrary, map]);
+
+  // Use directions service
+  useEffect(() => {
+    if (!directionsService || !directionsRenderer) return;
+    if (routeStatus?.status !== 'success') return;
+    console.log('use directions service');
+    directionsRenderer.setMap(map);
+    directionsService
+      .route({
+        origin: { lat: Number(routeStatus.path[0][0]), lng: Number(routeStatus.path[0][1]) },
+        destination: { lat: Number(routeStatus.path[routeStatus.path.length - 1][0]), lng: Number(routeStatus.path[routeStatus.path.length - 1][1]) },
+        waypoints: routeStatus.path.slice(1, -1).map((point) => ({ location: { lat: Number(point[0]), lng: Number(point[1]) }, stopover: true })),
+        travelMode: google.maps.TravelMode.DRIVING,
+        provideRouteAlternatives: true
+      })
+      .then(response => {
+        directionsRenderer.setDirections(response);
+      });
+
+    return () => directionsRenderer.setMap(null);
+  }, [directionsService, directionsRenderer, routeStatus]);
+  return null;
+}
 
 export default Map;
