@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import InputForm from '../components/InputForm'
 // import { mockRequestAndGetRouteStatus } from '../api/mock'
@@ -61,7 +61,7 @@ describe('InputForm', () => {
       total_time: 1800
     }
 
-    vi.mocked(requestAndGetRouteStatus).mockResolvedValueOnce(successResponse)
+    vi.mocked(requestAndGetRouteStatus).mockResolvedValueOnce(successResponse as any)
 
     render(<InputForm {...defaultProps} />)
 
@@ -100,7 +100,7 @@ describe('InputForm', () => {
       total_time: 1800
     }
 
-    render(<InputForm {...defaultProps} routeStatus={successStatus} />)
+    render(<InputForm {...defaultProps} routeStatus={successStatus as any} />)
 
     expect(screen.getByText(/total distance: 20000/i)).toBeInTheDocument()
     expect(screen.getByText(/total time: 1800/i)).toBeInTheDocument()

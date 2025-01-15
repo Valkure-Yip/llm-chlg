@@ -1,4 +1,4 @@
-const MOCK_API_URL = 'https://sg-mock-api.lalamove.com/mock/route';
+const MOCK_API_URL = import.meta.env.VITE_API_MOCK_URL;
 
 interface RouteRequest {
   origin: string;

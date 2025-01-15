@@ -1,30 +1,29 @@
 import { RouteStatus } from '@/api';
-import { AdvancedMarker, APIProvider, Map as GoogleMap, Marker, Pin, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
-import { useEffect, useMemo, useState } from 'react';
-import { Polyline } from './geometry/polyline';
+import { APIProvider, Map as GoogleMap, useMap, useMapsLibrary } from '@vis.gl/react-google-maps';
+import { useEffect, useState } from 'react';
 
-type Poi = { key: string, location: google.maps.LatLngLiteral, isStart: boolean, isEnd: boolean }
-type Path = { lat: number, lng: number }
+// type Poi = { key: string, location: google.maps.LatLngLiteral, isStart: boolean, isEnd: boolean }
+// type Path = { lat: number, lng: number }
 
 const Map = ({ routeStatus }: { routeStatus: RouteStatus | null }) => {
-  const markers = useMemo<Poi[]>(() => {
-    if (routeStatus?.status === 'success') {
-      return routeStatus.path.map((point, index) => ({
-        key: (index + 1).toString(),
-        location: { lat: Number(point[0]), lng: Number(point[1]) },
-        isStart: index === 0,
-        isEnd: index === routeStatus.path.length - 1,
-      }));
-    }
-    return [];
-  }, [routeStatus]);
+  // const markers = useMemo<Poi[]>(() => {
+  //   if (routeStatus?.status === 'success') {
+  //     return routeStatus.path.map((point, index) => ({
+  //       key: (index + 1).toString(),
+  //       location: { lat: Number(point[0]), lng: Number(point[1]) },
+  //       isStart: index === 0,
+  //       isEnd: index === routeStatus.path.length - 1,
+  //     }));
+  //   }
+  //   return [];
+  // }, [routeStatus]);
 
-  const paths = useMemo<Path[]>(() => {
-    if (routeStatus?.status === 'success') {
-      return routeStatus.path.map((point) => ({ lat: Number(point[0]), lng: Number(point[1]) }));
-    }
-    return [];
-  }, [routeStatus]);
+  // const paths = useMemo<Path[]>(() => {
+  //   if (routeStatus?.status === 'success') {
+  //     return routeStatus.path.map((point) => ({ lat: Number(point[0]), lng: Number(point[1]) }));
+  //   }
+  //   return [];
+  // }, [routeStatus]);
 
   return (
     <div className="flex-1">
