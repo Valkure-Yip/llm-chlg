@@ -27,7 +27,7 @@ const Map = ({ routeStatus }: { routeStatus: RouteStatus | null }) => {
   }, [routeStatus]);
 
   return (
-    <div className="flex-1 min-h-[600px]">
+    <div className="flex-1">
       <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
         onLoad={() => {
           console.log('Map loaded');
@@ -81,6 +81,7 @@ function Directions({ routeStatus }: { routeStatus: RouteStatus | null }) {
     if (routeStatus?.status !== 'success') return;
     console.log('use directions service');
     directionsRenderer.setMap(map);
+    console.log('start to request directions');
     directionsService
       .route({
         origin: { lat: Number(routeStatus.path[0][0]), lng: Number(routeStatus.path[0][1]) },
@@ -88,8 +89,10 @@ function Directions({ routeStatus }: { routeStatus: RouteStatus | null }) {
         waypoints: routeStatus.path.slice(1, -1).map((point) => ({ location: { lat: Number(point[0]), lng: Number(point[1]) }, stopover: true })),
         travelMode: google.maps.TravelMode.DRIVING,
         provideRouteAlternatives: true
-      })
-      .then(response => {
+      },
+      )
+      .then((response) => {
+        console.log('directions rendering')
         directionsRenderer.setDirections(response);
       });
 

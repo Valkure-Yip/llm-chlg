@@ -87,7 +87,7 @@ const InputForm = ({ routeStatus, onFinish, onReset }: InputFormProps) => {
               </FormItem>
             )}
           />
-          <div className="my-4 h-32 flex flex-col justify-end">
+          <div className="mt-8 mb-4 h-8 md:h-32 flex flex-col justify-end">
             {
               routeStatus?.status === 'success' && <div>
                 <p>total distance: {routeStatus.total_distance}</p>

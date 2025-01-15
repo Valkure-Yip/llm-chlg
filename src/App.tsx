@@ -18,7 +18,7 @@ function App() {
 
   return (
     <>
-      <div className="flex gap-16">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-16 items-stretch h-full">
         <InputForm onFinish={onFinish} onReset={onReset} routeStatus={routeStatus} />
         <Map routeStatus={routeStatus} />
       </div>
