@@ -1,7 +1,6 @@
 import './App.css'
 import InputForm from './components/InputForm'
 import Map from './components/Map'
-import { mockRequestAndGetRouteStatus } from './api/mock';
 import { RouteStatus } from './api';
 import { useState } from 'react';
 function App() {
