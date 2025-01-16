@@ -4,6 +4,8 @@
 
 A simple frontend application that allows users to input an origin and destination and get a planned route. This app displays an actual driving route with planned waypoints. The UI is responsive on mobile and desktop.
 
+Try it out [here](https://llm-chlg-valkureyips-projects.vercel.app/)
+
 on desktop:
 
 ![desktop](./public/desktop.png)
