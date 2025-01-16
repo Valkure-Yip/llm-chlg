@@ -16,19 +16,20 @@ on mobile:
 
 ## Prerequisites
 
-- This app uses Google Maps Services and requires a [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key)
+- [Node.js v22.4.0](https://nodejs.org/en/download/)
+- This app uses [Google Maps Services](https://developers.google.com/maps/documentation/javascript/overview) and requires a [Google Maps API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). 
 
 ## Setup and run
 Install dependencies
 ```bash
 npm install
 ```
-Create a `.env` file in the root directory and add the environment variables (see `.env.example` for reference)
+Create a `.env` file in the root directory and add the environment variables (see `.env.example` for reference) including **your Google Maps API Key**
 ```bash
 VITE_GOOGLE_MAPS_API_KEY = your_api_key_here # google maps api key
 VITE_USE_MOCK = false # true to use mock api
-VITE_API_URL = your_api_url_here # only used if VITE_USE_MOCK is false
-VITE_API_MOCK_URL = your_mock_api_url_here # only used if VITE_USE_MOCK is true
+VITE_API_URL = your_api_url_here # base url to the api, only used if VITE_USE_MOCK is false
+VITE_API_MOCK_URL = your_mock_api_url_here # base url to the mock api, only used if VITE_USE_MOCK is true
 ```
 
 Run the development server
@@ -62,3 +63,4 @@ Remember to set the environment variables in your production environment.
 - [Shadcn/UI + TailwindCSS](https://ui.shadcn.com/docs/installation/vite)
 - [Vitest](https://vitest.dev/guide/)
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- [@vis.gl/react-google-maps](https://visgl.github.io/react-google-maps/docs/get-started)
