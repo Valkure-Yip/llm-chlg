@@ -11,7 +11,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import InputForm from '../components/InputForm'
 // import { mockRequestAndGetRouteStatus } from '../api/mock'
-import { requestAndGetRouteStatus } from '../api'
+import { requestAndGetRouteStatus, RouteStatus } from '../api'
 
 // Mock the API calls
 // vi.mock('../api/mock', () => ({
@@ -61,7 +61,7 @@ describe('InputForm', () => {
       total_time: 1800
     }
 
-    vi.mocked(requestAndGetRouteStatus).mockResolvedValueOnce(successResponse as any)
+    vi.mocked(requestAndGetRouteStatus).mockResolvedValueOnce(successResponse as RouteStatus)
 
     render(<InputForm {...defaultProps} />)
 
@@ -100,7 +100,7 @@ describe('InputForm', () => {
       total_time: 1800
     }
 
-    render(<InputForm {...defaultProps} routeStatus={successStatus as any} />)
+    render(<InputForm {...defaultProps} routeStatus={successStatus as RouteStatus} />)
 
     expect(screen.getByText(/total distance: 20000/i)).toBeInTheDocument()
     expect(screen.getByText(/total time: 1800/i)).toBeInTheDocument()

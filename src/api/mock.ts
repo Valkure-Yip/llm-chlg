@@ -57,7 +57,7 @@ export const mockRequestRoute = async (
   return data.token;
 };
 
-export const mockGetRouteStatus = async (token: string, mockStatus: '500' | 'success' | 'inprogress' | 'failure'): Promise<RouteStatus> => {
+export const mockGetRouteStatus = async (_token: string, mockStatus: '500' | 'success' | 'inprogress' | 'failure'): Promise<RouteStatus> => {
   const response = await fetch(`${MOCK_API_URL}/${mockStatus}`, {
     method: 'GET',
     headers: {
